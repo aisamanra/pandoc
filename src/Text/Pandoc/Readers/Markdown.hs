@@ -1480,6 +1480,8 @@ inline = choice [ whitespace
                 , endline
                 , code
                 , strongOrEmph
+                , marquee
+                , blink
                 , note
                 , cite
                 , link
@@ -1650,6 +1652,27 @@ subscript = fmap B.subscript <$> try (do
   guardEnabled Ext_subscript
   char '~'
   mconcat <$> many1Till (notFollowedBy spaceChar >> inline) (char '~'))
+
+marquee :: MarkdownParser (F Inlines)
+marquee = fmap (B.spanWith marqueeAttr) <$> try (
+  guardEnabled Ext_90s >>
+  inlinesBetween marqueeStart marqueeEnd)
+  where marqueeStart = string "<<" >> lookAhead nonspaceChar
+                       >> notFollowedBy (char '<')
+        marqueeEnd   = try $ string "<<"
+        marqueeAttr  = ( ""
+                       , ["marquee"]
+                       , []
+                       )
+
+blink :: MarkdownParser (F Inlines)
+blink = fmap (B.spanWith blinkAttr) <$> try (
+  guardEnabled Ext_90s >>
+  inlinesBetween blinkStart blinkEnd)
+  where blinkStart = string "!!" >> lookAhead nonspaceChar
+                       >> notFollowedBy (char '!')
+        blinkEnd   = try $ string "!!"
+        blinkAttr  = ("", ["blink"], [])
 
 whitespace :: MarkdownParser (F Inlines)
 whitespace = spaceChar >> return <$> (lb <|> regsp) <?> "whitespace"

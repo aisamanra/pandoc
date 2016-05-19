@@ -119,6 +119,7 @@ data Extension =
     | Ext_line_blocks         -- ^ RST style line blocks
     | Ext_epub_html_exts      -- ^ Recognise the EPUB extended version of HTML
     | Ext_shortcut_reference_links -- ^ Shortcut reference links
+    | Ext_90s                 -- ^ Understand blink/marquee Markdown formatting
     deriving (Show, Read, Enum, Eq, Ord, Bounded, Data, Typeable, Generic)
 
 pandocExtensions :: Set Extension
